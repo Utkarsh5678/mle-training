@@ -15,4 +15,24 @@ The following techniques have been used:
  - All the above said modelling techniques are tried and evaluated. The final metric used to evaluate is mean squared error.
 
 ## To excute the script
-python < scriptname.py >
+
+## Running the Code
+
+### Prerequisites
+
+- Python 3.8 or higher installed
+- Conda package manager
+
+### Setup Conda Environment
+
+```bash
+git clone https://github.com/your-username/your-repository.git
+cd your-repository
+conda env create -f env.yml
+conda activate mle-dev
+
+Running the Script
+Once the Conda environment is activated, you can run the script using the following command:
+
+python script.py
+
