@@ -90,8 +90,8 @@ X = imputer.transform(housing_num)
 
 housing_tr = pd.DataFrame(X, columns=housing_num.columns,
                           index=housing.index) # noqa
-housing_tr["rooms_per_household"] = housing_tr["total_rooms"]/housing_tr["households"] # noqa
-housing_tr["bedrooms_per_room"] = housing_tr["total_bedrooms"]/housing_tr["total_rooms"] # noqa
+housing_tr["rooms_per_household"] = housing_tr["total_rooms"] / housing_tr["households"] # noqa
+housing_tr["bedrooms_per_room"] = housing_tr["total_bedrooms"] / housing_tr["total_rooms"] # noqa
 housing_tr["population_per_household"] = housing_tr["population"] / housing_tr["households"] # noqa
 
 housing_cat = housing[['ocean_proximity']]
