@@ -1,14 +1,15 @@
 name: Package Build and Tests
-
 on:
   push:
     branches:
       - main
       - github_setup
+
 jobs:
   build_and_test:
     name: Build and Test
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
