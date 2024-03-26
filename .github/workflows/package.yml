@@ -1,0 +1,76 @@
+name: Package Install and Deploy
+
+on:
+  push:
+    branches:
+      - Tree_and_artifact
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-package:
+    name: Build Package
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install tree
+        run: |
+          sudo apt-get update
+          sudo apt-get install tree -y
+
+      - name: Display Directory Tree Before Building
+        run: tree .
+
+      - name: Build Package
+        run: |
+          pip install --upgrade setuptools
+          pip install --upgrade build
+          python -m build
+
+      - name: Display Directory Tree After Building
+        run: tree .
+
+      - name: Upload Package Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: myartifact
+          path: dist/*.whl
+
+  deploy-package:
+    name: Deploy Package
+    needs: build-package
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: mle-dev
+          environment-file: etc/env.yml
+          auto-activate-base: false
+
+      - name: Verify Conda Installation
+        run: conda info
+
+      - name: Download Package Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: myartifact
+
+      - name: Install Package
+        run: pip install *.whl
+
+      - name: Run nonstandardcode.py
+        run: python -m awesome_package.nonstandardcode
