@@ -28,9 +28,9 @@ jobs:
 
       - name: Run Flake8
         run: |
-          conda run -n mle-dev flake8
+          run -n mle-dev flake8
 
       - name: Run nonstandardcode.py
         run: |
           pwd
-          conda run -n mle-dev python nonstandardcode.py
+          run -n mle-dev python nonstandardcode.py
