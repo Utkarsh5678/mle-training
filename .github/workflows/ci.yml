@@ -32,4 +32,4 @@ jobs:
 
       - name: Run nonstandardcode.py
         run: |
-          python nonstandardcode.py
+          python awesome_package.nonstandardcode.py
