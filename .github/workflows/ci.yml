@@ -28,9 +28,8 @@ jobs:
 
       - name: Run Flake8
         run: |
-          run -n mle-dev flake8
+          python -m flake8
 
       - name: Run nonstandardcode.py
         run: |
-          pwd
-          run -n mle-dev python nonstandardcode.py
+          python nonstandardcode.py
