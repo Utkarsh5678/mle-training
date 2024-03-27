@@ -31,5 +31,4 @@ jobs:
           python -m flake8
 
       - name: Run nonstandardcode.py
-        run: |
-          python -m src/awesome_package/nonstandardcode.py
+        run: python src/awesome_package/nonstandardcode.py
