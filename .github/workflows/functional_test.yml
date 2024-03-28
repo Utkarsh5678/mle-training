@@ -3,7 +3,7 @@ name: Functional_test
 on:
   push:
     branches:
-      - Using_pytest
+      - Refactor
 
   pull_request:
     branches:
