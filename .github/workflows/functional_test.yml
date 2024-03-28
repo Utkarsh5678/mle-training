@@ -1,4 +1,4 @@
-name: Funcational test
+name: Functional testing
 on:
     pull_request:
         branches:
@@ -24,20 +24,20 @@ jobs:
                     pip install setuptools
                     pip install build
 
-             - name: Display Directory Before Building
+             - name: Before Build
                run: tree
 
              - name: Build package
                run: python -m build
 
              - name: Install Package
-               run: pip install dist/mypackage-0.0.1-py3-none-any.whl
+               run: pip install dist/housingPricePrediction-0.0.1-py3-none-any.whl
 
-             - name: pytest
+             - name: Functional Testing
                run: pytest
 
              - name: Run main.py
-               run: python src/main.py
+               run: python scripts/main.py
 
-             - name: Display directory After Building
+             - name: After Build
                run: tree

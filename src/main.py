@@ -1,4 +1,4 @@
-from models import (
+from models.ingest_data import (
     fetch_housing_data,
     load_housing_data,
     prepare_data_for_training,
