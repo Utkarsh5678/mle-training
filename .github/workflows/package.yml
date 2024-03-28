@@ -7,7 +7,7 @@ on:
 
   pull_request:
     branches:
-      - main
+      - dummy
 
 jobs:
   build-package:
