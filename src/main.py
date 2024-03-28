@@ -1,13 +1,13 @@
 from scipy.stats import randint
 
-from awesome_package import ingest_data, models, score
+from models import ingest_data, methods, score
 
 ingest_data.fetch_housing_data()
 housing = ingest_data.load_housing_data()
 
 
 train_set, test_set, strat_train_set, strat_test_set = (
-    models.stratifiedShuffleSplit(housing)
+    methods.stratifiedShuffleSplit(housing)
 )
 
 compare_props = ingest_data.preprocessing(housing, strat_test_set, test_set)
@@ -26,10 +26,10 @@ housing, housing_labels, housing_prepared, imputer = (
     ingest_data.feature_extraction(housing, strat_train_set)
 )
 
-housing_predictions = models.regression("lin", housing_prepared, housing_labels)
+housing_predictions = methods.regression("lin", housing_prepared, housing_labels)
 lin_rmse, lin_mae = score.score(housing_labels, housing_predictions)
 
-housing_predictions = models.regression(
+housing_predictions = methods.regression(
     "tree", housing_prepared, housing_labels
 )
 tree_rmse, tree_mae = score.score(housing_labels, housing_predictions)
@@ -44,10 +44,10 @@ param_grid = [
     # then try 6 (2×3) combinations with bootstrap set as False
     {"bootstrap": [False], "n_estimators": [3, 10], "max_features": [2, 3, 4]},
 ]
-rnd_search, cvres, housing_prepared = models.cross_validation(
+rnd_search, cvres, housing_prepared = methods.cross_validation(
     "RandomizedSearchCV", housing_prepared, housing_labels, param_distribs,
     param_grid)
-grid_search, cvres, housing_prepared = models.cross_validation(
+grid_search, cvres, housing_prepared = methods.cross_validation(
     "GridSearchCV", housing_prepared, housing_labels, param_distribs,
     param_grid)
 
@@ -56,7 +56,7 @@ sorted(zip(feature_importances, housing_prepared.columns), reverse=True)
 final_model = grid_search.best_estimator_
 
 
-y_test, final_predictions = models.predict_Best_Estimator(
+y_test, final_predictions = methods.predict_Best_Estimator(
     grid_search, strat_test_set, housing_prepared, imputer
 )
 final_rmse, final_mae = score.score(y_test, final_predictions)
