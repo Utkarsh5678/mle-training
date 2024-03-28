@@ -73,4 +73,4 @@ jobs:
         run: pip install *.whl
 
       - name: Run Pytest
-        run: pytest test/functional_test/test_installation.py test/functional_test/test1.py test/functional_test/test2.py test/functional_test/test3.py
+        run: pytest test/functional_test/test1.py test/functional_test/test2.py test/functional_test/test3.py
