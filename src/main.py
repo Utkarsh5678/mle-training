@@ -3,7 +3,7 @@ from models.ingest_data import (
     load_housing_data,
     prepare_data_for_training,
 )
-from models import RF_score, score_model_mae, score_model_rmse
+from models.score import RF_score, score_model_mae, score_model_rmse
 from models.methods import (
     grid_tune_random_forest,
     rand_tune_random_forest,
