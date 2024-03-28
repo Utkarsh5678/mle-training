@@ -7,7 +7,7 @@ on:
 
   pull_request:
     branches:
-      - main
+      - Refactor
 
 jobs:
   build-package:
