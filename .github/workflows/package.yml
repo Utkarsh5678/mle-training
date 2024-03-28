@@ -71,6 +71,3 @@ jobs:
 
       - name: Install Package
         run: pip install *.whl
-
-      - name: Run nonstandardcode.py
-        run: python -m awesome_package.nonstandardcode
