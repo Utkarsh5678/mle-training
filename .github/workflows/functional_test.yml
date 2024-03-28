@@ -1,10 +1,6 @@
 name: Functional_test
 
 on:
-  push:
-    branches:
-      - Refactor
-
   pull_request:
     branches:
       - main
@@ -28,11 +24,16 @@ jobs:
       - name: Display Directory Tree Before Building
         run: tree .
 
+      
+
       - name: Build Package
         run: |
           pip install --upgrade setuptools
           pip install --upgrade build
           python -m build
+
+      - name: Run main.py
+        run: python src/main.py
 
       - name: Display Directory Tree After Building
         run: tree .
