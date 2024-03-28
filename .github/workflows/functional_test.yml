@@ -1,43 +1,62 @@
 name: Functional_test
+
 on:
-    pull_request:
-        branches:
-            - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                shell: bash -el {0}
-        steps:
-             - name: Checkout Repo
-               uses: actions/checkout@v4
-             - name: Setup Miniconda
-               uses: conda-incubator/setup-miniconda@v3
-               with:
-                 activate-environment: mle-dev
-                 environment-file: env.yml
-                 auto-activate-base: false
-             - run: |
-                    sudo apt install tree
-                    pip install pytest
-                    pip install setuptools
-                    pip install build
+  build-package:
+    name: Build Package
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -el {0}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: mle-dev
+          environment-file: env.yml
+          auto-activate-base: false
 
-             - name: Before Build
-               run: tree
+      - name: Verify Conda Installation
+        run: conda info
 
-             - name: Build package
-               run: python -m build
 
-             - name: Install Package
-               run: pip install dist/mypackage-0.0.1-py3-none-any.whl
+      - name: Install tree
+        run: |
+          sudo apt-get update
+          sudo apt-get install tree -y
 
-             - name: Functional Testing
-               run: pytest
+      - name: Display Directory Tree Before Building
+        run: tree .
 
-             - name: Run main.py
-               run: python scr/main.py
+      
 
-             - name: After Build
-               run: tree
+      - name: Build Package
+        run: |
+          pip install --upgrade setuptools
+          pip install --upgrade build
+          python -m build
+
+      - name: Run main.py
+        run: python src/main.py
+
+      - name: Display Directory Tree After Building
+        run: tree .
+      - name: Run Pytest
+        run: pytest 
+
+      - name: Upload Package Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: myartifact
+          path: dist/*.whl
+
+ 
+
+     
