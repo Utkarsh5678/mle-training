@@ -3,7 +3,7 @@ name: unit_test
 on:
   pull_request:
     branches:
-      - enh/14/refactor
+      - enh/17/unit_test
 
 jobs:
   build-package:
