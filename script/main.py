@@ -4,7 +4,7 @@ from mypackage.ingest_data import (
     prepare_data_for_training,
 )
 from mypackage.score import RF_score, score_model_mae, score_model_rmse
-from mypackage.methods import (
+from mypackage.train import (
     grid_tune_random_forest,
     rand_tune_random_forest,
     train_decision_tree,

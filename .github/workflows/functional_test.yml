@@ -20,7 +20,7 @@ jobs:
         uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: mle-dev
-          environment-file: env.yml
+          environment-file: deploy/conda/env.yml
           auto-activate-base: false
 
       - name: Verify Conda Installation
@@ -56,7 +56,7 @@ jobs:
   
       
       - name: Run main.py
-        run: python src/main.py
+        run: python script/main.py
   
       - name: Display Directory Tree After Building
         run: tree .
