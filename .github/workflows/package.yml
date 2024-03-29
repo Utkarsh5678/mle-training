@@ -1,13 +1,9 @@
 name: Package Install and Deploy
 
 on:
-  push:
-    branches:
-      - Tree_and_artifact
-
   pull_request:
     branches:
-      - main
+      - dummy
 
 jobs:
   build-package:
