@@ -55,7 +55,7 @@ jobs:
           name: myartifact    
       
       - name: Run main.py
-        run: python src/mypackage/main.py
+        run: python src/main.py
   
       - name: Display Directory Tree After Building
         run: tree .
