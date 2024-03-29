@@ -3,8 +3,8 @@ from mypackage.ingest_data import (
     load_housing_data,
     prepare_data_for_training,
 )
-from src.mypackage.score import RF_score, score_model_mae, score_model_rmse
-from src.mypackage.train import (
+from mypackage.score import RF_score, score_model_mae, score_model_rmse
+from mypackage.train import (
     grid_tune_random_forest,
     rand_tune_random_forest,
     train_decision_tree,
