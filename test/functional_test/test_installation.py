@@ -1,8 +1,23 @@
 def test_pkg_installation():
     try:
-        import awesome_package
+        import mypackage
     except Exception as e:
-        assert False, f"Error: {e}. Awesome_package is not installed correctly."
+        assert False, f"Error: {e}. mypackage is not installed properly."
         
-    # with pytest.raises(ImportError):
-    #     import Awesome_package
+def test_ingestion():
+    try:
+        from mypackage import ingest_data
+    except Exception as e:
+        assert False, f"Error: {e}. mypackage is not installed properly."
+
+def test_train():
+    try:
+        from mypackage import train
+    except Exception as e:
+        assert False, f"Error: {e}. mypackage is not installed properly."
+
+def test_score():
+    try:
+        from mypackage import score
+    except Exception as e:
+        assert False, f"Error: {e}. mypackage is not installed properly."
