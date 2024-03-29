@@ -2,8 +2,7 @@ name: Package Build and Tests
 on:
   push:
     branches:
-      - main
-      - github_setup
+      - dummy
 
 jobs:
   build_and_test:
