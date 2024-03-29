@@ -41,6 +41,7 @@ jobs:
         run: |
           pip install --upgrade setuptools
           pip install --upgrade build
+          pip intsall -e .
           python -m build
 
       - name: Upload Package Artifact
