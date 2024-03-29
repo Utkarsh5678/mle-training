@@ -48,7 +48,12 @@ jobs:
         with:
           name: myartifact
           path: dist/*.whl
-
+      
+      - name: Download Package Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: myartifact    
+      
       - name: Run main.py
         run: python src/mypackage/main.py
   
