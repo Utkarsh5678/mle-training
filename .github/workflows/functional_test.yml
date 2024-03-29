@@ -50,7 +50,7 @@ jobs:
           path: dist/*.whl
 
       - name: Run main.py
-        run: python src/mypackage.py
+        run: python src/mypackage
   
       - name: Display Directory Tree After Building
         run: tree .
