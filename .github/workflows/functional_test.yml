@@ -52,16 +52,17 @@ jobs:
       - name: Download Package Artifact
         uses: actions/download-artifact@v2
         with:
-          name: myartifact    
+          name: myartifact   
+      - name: Run Pytest
+        run: pytest 
+  
       
       - name: Run main.py
         run: python src/main.py
   
       - name: Display Directory Tree After Building
         run: tree .
-      - name: Run Pytest
-        run: pytest 
-
+     
  
 
      

@@ -2,7 +2,7 @@ def test_pkg_installation():
     try:
         import mypackage
     except Exception as e:
-        assert False, f"Error: {e}. Awesome_package is not installed correctly."
+        assert False, f"Error: {e}. my_package is not installed correctly."
 
     try:
         from mypackage import ingest_data
