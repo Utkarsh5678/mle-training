@@ -1,10 +1,10 @@
-from mypackage.ingest_data import (
+from housingpriceprediction.ingest_data import (
     fetch_housing_data,
     load_housing_data,
     prepare_data_for_training,
 )
-from mypackage.score import RF_score, score_model_mae, score_model_rmse
-from mypackage.train import (
+from housingpriceprediction.score import RF_score, score_model_mae, score_model_rmse
+from housingpriceprediction.train import (
     grid_tune_random_forest,
     rand_tune_random_forest,
     train_decision_tree,
