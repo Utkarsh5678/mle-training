@@ -9,7 +9,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = os.path.join("data", "housing")
-HOUSING_URL = DOWNLOAD_ROOT + "data/housing/housing.tgz"
+HOUSING_URL = DOWNLOAD_ROOT + "datasets/housing/housing.tgz"
 
 def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
     os.makedirs(housing_path, exist_ok=True)  
