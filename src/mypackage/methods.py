@@ -5,7 +5,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.tree import DecisionTreeRegressor
 import os
-import tensorflow as tf
 
 def train_linear_regression(X_train, y_train):
     lin_reg = LinearRegression()
