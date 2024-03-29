@@ -3,7 +3,7 @@ name: unit_test
 on:
   pull_request:
     branches:
-      - enh/17/unit_test
+      - main
 
 jobs:
   build-package:
