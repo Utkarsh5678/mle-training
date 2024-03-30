@@ -56,14 +56,19 @@ jobs:
           name: myartifact   
   
       - name: Run scripy_ingest.py
-        run: python script/script_ingest.py
+        run: python script/ingest.py data
 
       - name: Run script_score.py
-        run: python script/script_score.py
+        run: |
+          python script/scoring.py data/raw artifacts/model --output_mode print
+          python script/scoring.py data/raw artifacts/model file artifacts/scoring/score.txt
+          
 
       - name: Run script_train.py
-        run: python script/script_train.py
-    
+        run: python script/train.py data/raw artifacts/model
+      - name: Run main.py
+        run: python script/main.py
+      
       - name: Pytest functional
         run: pytest
       
