@@ -64,7 +64,7 @@ jobs:
       - name: Run script_score.py
         run: |
           python script/script_score.py data/raw artifacts/model print
-          python script/script_score.py data/raw artifacts/model file artifacts/scoring/score.txt
+          python script/script_score.py data/raw artifacts/model file 
 
       
       - name: Pytest functional
