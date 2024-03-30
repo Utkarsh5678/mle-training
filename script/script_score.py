@@ -18,9 +18,9 @@ def main(args):
 
     # Load dataset
     df = {}
-    files = os.listdir(input_dr)
+    files = os.listdir(args.input_dr)
     for f in files:
-        file_path = os.path.join(input_dr, f)
+        file_path = os.path.join(args.input_dr, f)
         if not file_path.endswith(".csv"):
             continue  # Skip non-CSV files
         try:
@@ -60,12 +60,10 @@ if __name__ == "__main__":
         help="Output mode: 'file' to save to a file, 'print' to print to console (default: 'print')",  # noqa
     )
     parser.add_argument(
-        "output_file",
+        "--output_file",
         type=str,
-        help="Path to the output file",
+        help="Path to the output file. Required only when output_mode is 'file'.",
     )
     args = parser.parse_args()
-    input_dr = args.input_dr
-    model_ = args.model_
 
     main(args)
