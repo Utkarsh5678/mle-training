@@ -59,12 +59,12 @@ jobs:
         run: python script/ingest.py data
           
       - name: Run script_train.py
-        run: python script/train.py data/raw artifacts/model
+        run: python script/script_train.py data/raw artifacts/model
 
       - name: Run script_score.py
         run: |
-          python script/scoring.py data/raw artifacts/model --output_mode print
-          python script/scoring.py data/raw artifacts/model file artifacts/scoring/score.txt
+          python script/script_scoring.py data/raw artifacts/model --output_mode print
+          python script/script_scoring.py data/raw artifacts/model file artifacts/scoring/score.txt
 
       
       - name: Pytest functional
