@@ -34,9 +34,8 @@ def main(args):
 
     # Score models
     for model_name, model in models.items():
-        mae, rmse = scoring.score_model_mae,scoring.score_model_rmse(
-            model, X_train, y_train
-        )  # noqa
+        mae = scoring.score_model_mae(model, X_train, y_train)
+        rmse = scoring.score_model_rmse(model, X_train, y_train)
         if args.output_mode == "file":
             os.makedirs(os.path.dirname(args.output_file), exist_ok=True)
             with open(args.output_file, "a") as f:
