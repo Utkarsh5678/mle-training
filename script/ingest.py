@@ -20,8 +20,8 @@ def main(output_folder):
     os.makedirs(os.path.join(output_folder, "processed"), exist_ok=True)
 
     save_csv(housing, os.path.join(output_folder, "raw", "housing.csv"))
-    save_csv(prepare_data_for_training, os.path.join(output_folder, "processed", "train_set.csv"))
-    save_csv(prepare_data_for_training, os.path.join(output_folder, "processed", "test_set.csv"))
+    save_csv(X_train, os.path.join(output_folder, "processed", "train_set.csv"))
+    save_csv(X_test, os.path.join(output_folder, "processed", "test_set.csv"))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Download and create stratified split datasets.")
