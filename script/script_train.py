@@ -22,7 +22,7 @@ def main(args):
 
     housing = df["housing.csv"]
 
-    train_set, test_set = ingest_data.prepare_data_for_training(housing)
+    train_set, test_set = ingest_data.StratifiedShuffleSplit(housing)
     housing, housing_labels = ingest_data.explore_housing_data(
         housing, train_set, test_set
     )  # noqa
