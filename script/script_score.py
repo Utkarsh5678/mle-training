@@ -34,7 +34,7 @@ def main(args):
 
     # Score models
     for model_name, model in models.items():
-        mae, rmse = scoring.evaluate_model(
+        mae, rmse = scoring.RF_score,scoring.score_model_mae,scoring.score_model_rmse(
             model, X_train, y_train
         )  # noqa
         if args.output_mode == "file":
