@@ -27,18 +27,15 @@ def main(args):
             df[f] = pd.read_csv(file_path)
         except pd.errors.EmptyDataError:
             continue  # Skip empty CSV files
-
+    ingest_data.fetch_housing_data()
     housing = df["housing.csv"]
-    train_set, test_set = ingest_data.stratified_split(housing)
-    housing, housing_labels = ingest_data.explore_housing_data(
-        housing, train_set, test_set
-    )  # noqa
-    housing_prepared = ingest_data.preprocess_data(housing)
+    X_train, X_test, y_train, y_test = ingest_data.prepare_data_for_training(housing)
+   
 
     # Score models
     for model_name, model in models.items():
         mae, rmse = scoring.evaluate_model(
-            model, housing_prepared, housing_labels
+            model, X_train, y_train
         )  # noqa
         if args.output_mode == "file":
             os.makedirs(os.path.dirname(args.output_file), exist_ok=True)

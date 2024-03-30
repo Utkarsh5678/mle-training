@@ -19,7 +19,8 @@ def main(args):
             df[f] = pd.read_csv(file_path)
         except pd.errors.EmptyDataError:
             continue  # Skip empty CSV files
-
+    
+    ingest_data.fetch_housing_data()
     housing = df["housing.csv"]
 
     X_train, X_test, y_train, y_test = ingest_data.prepare_data_for_training(housing)
