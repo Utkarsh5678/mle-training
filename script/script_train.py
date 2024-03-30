@@ -22,37 +22,33 @@ def main(args):
 
     housing = df["housing.csv"]
 
-    train_set, test_set = ingest_data.StratifiedShuffleSplit(housing)
-    housing, housing_labels = ingest_data.explore_housing_data(
-        housing, train_set, test_set
-    )  # noqa
-    housing_prepared = ingest_data.preprocess_data(housing)
+    X_train, X_test, y_train, y_test = ingest_data.prepare_data_for_training(housing)
+    LR_model = train.train_linear_regression(X_train, y_train)
 
-    # Train models
-    linear_reg_model = train.train_linear_regression(
-        housing_prepared, housing_labels
-    )  # noqa
-    decision_tree_model = train.train_decision_tree(
-        housing_prepared, housing_labels
-    )  # noqa
-    random_forest_model = train.train_random_forest(
-        housing_prepared, housing_labels
-    )  # noqa
-    tuned_random_forest_model = train.tune_random_forest(
-        housing_prepared, housing_labels
-    )  # noqa
-    final_model = tuned_random_forest_model.best_estimator_
+    DT_model = train.train_decision_tree(X_train, y_train)
+
+    rand_tune_RF_model = train.rand_tune_random_forest(X_train, y_train)
+    rand_cvres = rand_tune_RF_model.cv_results_
+
+    grid_tune_Tuned_RF_model = train.grid_tune_random_forest(X_train, y_train)
+    grid_tune_Tuned_RF_model.best_params_
+    grid_cvres = grid_tune_Tuned_RF_model.cv_results_
+
+    feature_importances = grid_tune_Tuned_RF_model.best_estimator_.feature_importances_
+    sorted(zip(feature_importances, X_train.columns), reverse=True)
+
+    final_model = grid_tune_Tuned_RF_model.best_estimator_
 
     # Save models
-    joblib.dump(linear_reg_model, args.output_dr + "/linear_reg_model.pkl")
+    joblib.dump(LR_model, args.output_dr + "/linear_reg_model.pkl")
     joblib.dump(
-        decision_tree_model, args.output_dr + "/decision_tree_model.pkl"
+        DT_model, args.output_dr + "/decision_tree_model.pkl"
     )  # noqa
     joblib.dump(
-        random_forest_model, args.output_dr + "/random_forest_model.pkl"
+        rand_tune_RF_model , args.output_dr + "/random_forest_model.pkl"
     )  # noqa
     output_path = args.output_dr + "/tuned_random_forest_model.pkl"
-    joblib.dump(tuned_random_forest_model, output_path)
+    joblib.dump(grid_tune_Tuned_RF_model, output_path)
     joblib.dump(final_model, args.output_dr + "/final_model.pkl")
 
 
