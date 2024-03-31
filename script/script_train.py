@@ -7,20 +7,11 @@ import logging
 from housingpriceprediction import ingest_data
 from housingpriceprediction import train
 
-def setup_logging(log_file):
-    log_folder = "logs"
-    os.makedirs(log_folder, exist_ok=True)  # Create 'logs' folder if it doesn't exist
-    log_file_path = os.path.join(log_folder, log_file)
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        filename=log_file_path,
-        filemode='w'  # Overwrite the log file each time
-    )
-
 def main(args):
-    log_file = "train_log.txt"
-    setup_logging(log_file)
+    # Set up logging if enabled
+    if args.log_file:
+        logging.basicConfig(filename=args.log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+        logging.info("Starting model training...")
 
     # Load dataset
     df = {}
@@ -39,34 +30,26 @@ def main(args):
 
     X_train, X_test, y_train, y_test = ingest_data.prepare_data_for_training(housing)
     
-    logging.info("Training Linear Regression model...")
+    # Train models
     LR_model = train.train_linear_regression(X_train, y_train)
-    logging.info("Training Decision Tree model...")
     DT_model = train.train_decision_tree(X_train, y_train)
-    logging.info("Training Random Forest model with random tuning...")
     rand_tune_RF_model = train.rand_tune_random_forest(X_train, y_train)
-    logging.info("Training Random Forest model with grid tuning...")
     grid_tune_Tuned_RF_model = train.grid_tune_random_forest(X_train, y_train)
-    grid_tune_Tuned_RF_model.best_params_
-    grid_cvres = grid_tune_Tuned_RF_model.cv_results_
 
-    feature_importances = grid_tune_Tuned_RF_model.best_estimator_.feature_importances_
-    sorted(zip(feature_importances, X_train.columns), reverse=True)
+    # Create the output directory if it doesn't exist
+    output_dir = args.output_dr
+    os.makedirs(output_dir, exist_ok=True)  
 
-    final_model = grid_tune_Tuned_RF_model.best_estimator_
+    # Save trained models
+    joblib.dump(LR_model, os.path.join(output_dir, "linear_reg_model.pkl"))
+    joblib.dump(DT_model, os.path.join(output_dir, "decision_tree_model.pkl"))
+    joblib.dump(rand_tune_RF_model, os.path.join(output_dir, "random_forest_model.pkl"))
+    joblib.dump(grid_tune_Tuned_RF_model, os.path.join(output_dir, "tuned_random_forest_model.pkl"))
+    joblib.dump(grid_tune_Tuned_RF_model.best_estimator_, os.path.join(output_dir, "final_model.pkl"))
 
-
-    logging.info("Saving trained models...")
-    joblib.dump(LR_model, args.output_dr + "/linear_reg_model.pkl")
-    joblib.dump(
-        DT_model, args.output_dr + "/decision_tree_model.pkl"
-     )  # noqa
-    joblib.dump(
-        rand_tune_RF_model , args.output_dr + "/random_forest_model.pkl"
-    )  # noqa
-    output_path = args.output_dr + "/tuned_random_forest_model.pkl"
-    joblib.dump(grid_tune_Tuned_RF_model, output_path)
-    joblib.dump(final_model, args.output_dr + "/final_model.pkl")
+    # Log completion if enabled
+    if args.log_file:
+        logging.info("Model training completed.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -74,6 +57,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("input_dr", type=str, help="Path to the dataset directory")
     parser.add_argument("output_dr", type=str, help="Path to the output directory")
+    parser.add_argument("--log_file", type=str, help="Path to the log file")
     args = parser.parse_args()
 
     main(args)
