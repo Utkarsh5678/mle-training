@@ -2,7 +2,6 @@ import argparse
 import os
 
 from housingpriceprediction.ingest_data import (
-    fetch_housing_data,
     load_housing_data,
     prepare_data_for_training,
 )
@@ -12,7 +11,6 @@ def save_csv(data, filename):
     data.to_csv(filename, index=False)
 
 def main(output_folder):
-    fetch_housing_data()
     housing = load_housing_data()
     X_train, X_test, y_train, y_test = prepare_data_for_training(housing)
 
