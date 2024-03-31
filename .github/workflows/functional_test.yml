@@ -55,12 +55,20 @@ jobs:
         with:
           name: myartifact   
   
-      
-      - name: Run main.py
-        run: python script/main.py
+      - name: Run scripy_ingest.py
+        run: python script/ingest.py data
+          
+      - name: Run script_train.py
+        run: python script/script_train.py data/raw artifacts/model
+
+      - name: Run script_score.py
+        run: |
+          python script/script_score.py data/raw artifacts/model print 
+
       
       - name: Pytest functional
         run: pytest
+      
   
       - name: Display Directory Tree After Building
         run: tree .
