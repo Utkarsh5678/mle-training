@@ -47,13 +47,26 @@ def main(args):
     rand_tune_RF_model = train.rand_tune_random_forest(X_train, y_train)
     logging.info("Training Random Forest model with grid tuning...")
     grid_tune_Tuned_RF_model = train.grid_tune_random_forest(X_train, y_train)
+    grid_tune_Tuned_RF_model.best_params_
+    grid_cvres = grid_tune_Tuned_RF_model.cv_results_
+
+    feature_importances = grid_tune_Tuned_RF_model.best_estimator_.feature_importances_
+    sorted(zip(feature_importances, X_train.columns), reverse=True)
+
+    final_model = grid_tune_Tuned_RF_model.best_estimator_
+
 
     logging.info("Saving trained models...")
-    joblib.dump(LR_model, os.path.join(args.output_dr, "linear_reg_model.pkl"))
-    joblib.dump(DT_model, os.path.join(args.output_dr, "decision_tree_model.pkl"))
-    joblib.dump(rand_tune_RF_model, os.path.join(args.output_dr, "random_forest_model.pkl"))
-    joblib.dump(grid_tune_Tuned_RF_model, os.path.join(args.output_dr, "tuned_random_forest_model.pkl"))
-    joblib.dump(grid_tune_Tuned_RF_model.best_estimator_, os.path.join(args.output_dr, "final_model.pkl"))
+    joblib.dump(LR_model, args.output_dr + "/linear_reg_model.pkl")
+    joblib.dump(
+        DT_model, args.output_dr + "/decision_tree_model.pkl"
+     )  # noqa
+    joblib.dump(
+        rand_tune_RF_model , args.output_dr + "/random_forest_model.pkl"
+    )  # noqa
+    output_path = args.output_dr + "/tuned_random_forest_model.pkl"
+    joblib.dump(grid_tune_Tuned_RF_model, output_path)
+    joblib.dump(final_model, args.output_dr + "/final_model.pkl")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
