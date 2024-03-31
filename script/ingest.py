@@ -1,5 +1,7 @@
 import argparse
 import os
+import logging
+import sys
 
 from housingpriceprediction.ingest_data import (
     fetch_housing_data,
@@ -12,6 +14,12 @@ def save_csv(data, filename):
     data.to_csv(filename, index=False)
 
 def main(output_folder):
+    log_file = os.path.join(output_folder, "logs", "housing_prediction.log")
+    
+    os.makedirs(os.path.join(output_folder, "logs"), exist_ok=True)
+    
+    logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(module)s - %(levelname)s - %(message)s')
+    
     fetch_housing_data()
     housing = load_housing_data()
     X_train, X_test, y_train, y_test = prepare_data_for_training(housing)
