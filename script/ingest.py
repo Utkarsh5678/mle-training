@@ -2,6 +2,7 @@ import argparse
 import os
 
 from housingpriceprediction.ingest_data import (
+    fetch_housing_data,
     load_housing_data,
     prepare_data_for_training,
 )
