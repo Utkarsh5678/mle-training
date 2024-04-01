@@ -8,7 +8,6 @@ from housingpriceprediction import ingest_data
 from housingpriceprediction import score as scoring
 from housingpriceprediction.logging import setup_logging
 
-setup_logging()
 def main(args):
     log_folder = "log"  # Assuming "log" is the existing log folder in the directory
     setup_logging(args.output_mode, args.output_file, log_folder)

@@ -41,7 +41,7 @@ def setup_logging(output_mode, log_file=None, log_folder="logs"):
     logging.getLogger('').addHandler(console)
     
     # Diagnostic print statement
-    print("Logging setup completed.")  
+    print("Logging setup completed.")
 def train_logging():
      log_folder = "log"
      os.makedirs(log_folder, exist_ok=True)
