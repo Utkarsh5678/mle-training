@@ -63,14 +63,14 @@ cd mle-training
 Now that we have navigated to the project directory, we can execute the following commands to execute the script:
 
 ```bash
-python python script/ingest.py data    # Executes the script
+python script/ingest.py data    # Executes the script
 ```
 
 ```bash
-python python script/script_train.py data/raw artifacts/model -h
-python python script/script_train.py data/raw artifacts/model
+python script/script_train.py data/raw artifacts/model --log_file training.log -h
+python script/script_train.py data/raw artifacts/model --log_file training.log
 ```
 
 ```bash
-python script/script_score.py data/raw artifacts/model print  -h
-python script/script_score.py data/raw artifacts/model print 
+python script/script_score.py data/raw artifacts/model file --output_file="scoring.log"  -h
+python script/script_score.py data/raw artifacts/model file --output_file="scoring.log"
