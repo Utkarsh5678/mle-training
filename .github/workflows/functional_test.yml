@@ -1,4 +1,4 @@
-name: Functional and unit testing
+name: Logging
 
 on:
   pull_request:
@@ -59,11 +59,11 @@ jobs:
         run: python script/ingest.py data
           
       - name: Run script_train.py
-        run: python script/script_train.py data/raw artifacts/model
+        run: python script/script_train.py data/raw artifacts/model --log_file training.log
 
       - name: Run script_score.py
         run: |
-          python script/script_score.py data/raw artifacts/model print 
+          python script/script_score.py data/raw artifacts/model file --output_file="scoring.log"
 
       
       - name: Pytest functional
