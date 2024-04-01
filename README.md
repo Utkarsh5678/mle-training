@@ -1,42 +1,76 @@
-# Median housing value prediction
+# Median Housing Value Prediction
 
-The housing data can be downloaded from https://raw.githubusercontent.com/ageron/handson-ml/master/. The script has codes to download the data. We have modelled the median house value on given housing data. 
+This project models the median house value based on a given housing dataset. The housing data can be downloaded [here](https://raw.githubusercontent.com/ageron/handson-ml/master/). The script includes code to download the data.
 
-The following techniques have been used: 
+## Techniques Used
 
- - Linear regression
- - Decision Tree
- - Random Forest
+The following techniques have been implemented:
 
-## Steps performed
- - We prepare and clean the data. We check and impute for missing values.
- - Features are generated and the variables are checked for correlation.
- - Multiple sampling techinuqies are evaluated. The data set is split into train and test.
- - All the above said modelling techniques are tried and evaluated. The final metric used to evaluate is mean squared error.
+- Linear Regression
+- Decision Tree
+- Random Forest
 
-## To excute the script
-1)First divide the nonstandardcode.py into three parts data_ingestion which imports data and cleans it,methods which will train the cleaned data and has different models under it ,third is score which tells us the score of the predicted models.
+## Steps Performed
 
-2)In the methods file add code to make pickle files in artifacts
+1. Data Preparation and Cleaning:
+   - Download the data using the provided script.
+   - Check and impute missing values.
 
-3)Build a workflow accordingly that is first set up job,then create repository,setting up miniconda,verify the miniconda environment set up,install tree and create a tree structure before building the package,build the package,upload package artifact and download it ,run main.py and pytest and build the tree again .
+2. Feature Generation and Correlation:
+   - Generate features.
+   - Check variables for correlation.
 
-## Running the Code
+3. Sampling Techniques and Data Split:
+   - Evaluate multiple sampling techniques.
+   - Split the dataset into training and testing sets.
 
-### Prerequisites
+4. Model Evaluation:
+   - Implement and evaluate Linear Regression, Decision Tree, and Random Forest models.
+   - Use mean squared error as the final metric for evaluation.
 
-- Python 3.8 or higher installed
-- Conda package manager
+## How to Execute the Script
 
-### Setup Conda Environment
+First you need to clone this repository.
 
 ```bash
-git clone https://github.com/your-username/your-repository.git
-cd your-repository
-conda env create -f env.yml
-conda activate mle-dev
+git clone https://github.com/Utkarsh5678/mle-training.git
+```
 
-Running the Script
-Once the Conda environment is activated, you can run the script using the following command:
+Before running the script, ensure that you have activated the conda environment `mle-dev` where the required packages are installed.
+If the `mle-dev` environment does not exist or you don't have the necessary packages installed in that environment, you can create or update your mle-dev environment with all the necessary packages by using the provided env.yml file which is present inside the deploy/conda directory.
 
-python script.py
+```bash
+conda env create -f deploy/conda/env.yml
+```
+
+Now we can activate the `mle-dev` environment.
+
+```bash
+conda env create -f deploy/conda/env.yml
+```
+
+After that execute the command to install the HousePricePrediction package
+
+```bash
+pip install -e .
+```
+Once the environment is activated and the required packages are installed, navigate to the project directory.
+
+```bash
+cd mle-training
+```
+
+Now that we have navigated to the project directory, we can execute the following commands to execute the script:
+
+```bash
+python script/ingest.py data    # Executes the script
+```
+
+```bash
+python script/script_train.py data/raw artifacts/model --log_file training.log -h
+python script/script_train.py data/raw artifacts/model --log_file training.log
+```
+
+```bash
+python script/script_score.py data/raw artifacts/model file --output_file="scoring.log"  -h
+python script/script_score.py data/raw artifacts/model file --output_file="scoring.log"
