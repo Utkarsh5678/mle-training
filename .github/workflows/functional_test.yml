@@ -1,4 +1,4 @@
-name: Refactor
+name: Functional and unit testing
 
 on:
   pull_request:
