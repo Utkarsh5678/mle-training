@@ -1,15 +1,18 @@
 import argparse
-import joblib
 import os
+import joblib
 import pandas as pd
 import logging  # Add logging module
 
 from housingpriceprediction import ingest_data
 from housingpriceprediction import score as scoring
 
-def setup_logging(output_mode, log_file=None):
-    log_folder = "logs"
-    os.makedirs(log_folder, exist_ok=True)  # Create 'logs' folder if it doesn't exist
+def setup_logging(output_mode, log_file=None, log_folder="logs"):
+    os.makedirs(log_folder, exist_ok=True)  # Create the log folder if it doesn't exist
+    
+    # Print the log folder path for diagnostic purposes
+    print("Log folder path:", os.path.abspath(log_folder))
+    
     if output_mode == 'file':
         log_file = os.path.join(log_folder, log_file) if log_file else os.path.join(log_folder, "housing_prediction.log")
     else:
@@ -26,9 +29,13 @@ def setup_logging(output_mode, log_file=None):
     formatter = logging.Formatter('%(levelname)s - %(message)s')
     console.setFormatter(formatter)
     logging.getLogger('').addHandler(console)
+    
+    # Diagnostic print statement
+    print("Logging setup completed.")  
 
 def main(args):
-    setup_logging(args.output_mode, args.output_file)
+    log_folder = "log"  # Assuming "log" is the existing log folder in the directory
+    setup_logging(args.output_mode, args.output_file, log_folder)
 
     # Load models
     model_files = os.listdir(args.model_)

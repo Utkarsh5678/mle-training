@@ -3,15 +3,25 @@ import os
 import joblib
 import pandas as pd
 import logging
-
+import sys
 from housingpriceprediction import ingest_data
 from housingpriceprediction import train
 
 def main(args):
-    # Set up logging if enabled
-    if args.log_file:
-        logging.basicConfig(filename=args.log_file, level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-        logging.info("Starting model training...")
+    # Set up logging to both file and console
+    log_folder = "log"
+    os.makedirs(log_folder, exist_ok=True)
+    log_file = os.path.join(log_folder, args.log_file) if args.log_file else None
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file) if log_file else None,  # File handler if log file specified
+            logging.StreamHandler(sys.stdout)  # Stream handler to print to console
+        ],
+    )
+    logging.info("Starting model training...")
 
     # Load dataset
     df = {}
@@ -47,9 +57,8 @@ def main(args):
     joblib.dump(grid_tune_Tuned_RF_model, os.path.join(output_dir, "tuned_random_forest_model.pkl"))
     joblib.dump(grid_tune_Tuned_RF_model.best_estimator_, os.path.join(output_dir, "final_model.pkl"))
 
-    # Log completion if enabled
-    if args.log_file:
-        logging.info("Model training completed.")
+    # Log completion
+    logging.info("Model training completed.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -57,7 +66,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("input_dr", type=str, help="Path to the dataset directory")
     parser.add_argument("output_dr", type=str, help="Path to the output directory")
-    parser.add_argument("--log_file", type=str, help="Path to the log file")
+    parser.add_argument("--log_file", type=str, help="Name of the log file")
     args = parser.parse_args()
 
     main(args)
