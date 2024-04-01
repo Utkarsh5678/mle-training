@@ -42,28 +42,17 @@ def setup_logging(output_mode, log_file=None, log_folder="logs"):
     
     # Diagnostic print statement
     print("Logging setup completed.")
-def train_logging():
-     log_folder = "log"
-     os.makedirs(log_folder, exist_ok=True)
-     log_file = os.path.join(log_folder, args.log_file) if args.log_file else None
+
+def train_logging(log_file=None, log_folder="log"):
+    os.makedirs(log_folder, exist_ok=True)
+    log_file = os.path.join(log_folder, log_file) if log_file else None
     
-     logging.basicConfig(
+    logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
-            logging.FileHandler(log_file) if log_file else None,  # File handler if log file specified
-            logging.StreamHandler(sys.stdout)  # Stream handler to print to console
+            logging.FileHandler(log_file) if log_file else None,
+            logging.StreamHandler(sys.stdout)
         ],
     )
-     logging.info("Starting model training...")
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Train models on input directory and save them to output directory"
-    )
-    parser.add_argument("input_dr", type=str, help="Path to the dataset directory")
-    parser.add_argument("output_dr", type=str, help="Path to the output directory")
-    parser.add_argument("--log_file", type=str, help="Name of the log file")
-    args = parser.parse_args()
-
-    train_logging(args)
+    logging.info("Starting model training...")

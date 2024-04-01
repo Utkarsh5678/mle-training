@@ -6,22 +6,11 @@ import logging
 import sys
 from housingpriceprediction import ingest_data
 from housingpriceprediction import train
+from housingpriceprediction.logging import train_logging
 
 def main(args):
     # Set up logging to both file and console
-    log_folder = "log"
-    os.makedirs(log_folder, exist_ok=True)
-    log_file = os.path.join(log_folder, args.log_file) if args.log_file else None
-    
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler(log_file) if log_file else None,  # File handler if log file specified
-            logging.StreamHandler(sys.stdout)  # Stream handler to print to console
-        ],
-    )
-    logging.info("Starting model training...")
+    train_logging(args.log_file)
 
     # Load dataset
     df = {}
