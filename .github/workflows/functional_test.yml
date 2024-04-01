@@ -1,10 +1,6 @@
-name: Functional_test
+name: Refactor
 
 on:
-  push:
-    branches:
-      - Using_pytest
-
   pull_request:
     branches:
       - main
@@ -19,6 +15,17 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+      
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: mle-dev
+          environment-file: deploy/conda/env.yml
+          auto-activate-base: false
+
+      - name: Verify Conda Installation
+        run: conda info
+
 
       - name: Install tree
         run: |
@@ -28,49 +35,36 @@ jobs:
       - name: Display Directory Tree Before Building
         run: tree .
 
+      
+
       - name: Build Package
         run: |
           pip install --upgrade setuptools
           pip install --upgrade build
+          pip install -e .
           python -m build
-
-      - name: Display Directory Tree After Building
-        run: tree .
 
       - name: Upload Package Artifact
         uses: actions/upload-artifact@v2
         with:
           name: myartifact
           path: dist/*.whl
-
-  deploy-package:
-    name: Deploy Package
-    needs: build-package
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash -el {0}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Miniconda
-        uses: conda-incubator/setup-miniconda@v3
-        with:
-          activate-environment: mle-dev
-          environment-file: env.yml
-          auto-activate-base: false
-
-      - name: Verify Conda Installation
-        run: conda info
-
+      
       - name: Download Package Artifact
         uses: actions/download-artifact@v2
         with:
-          name: myartifact
-
-      - name: Install Package
-        run: pip install *.whl
-
-      - name: Run Pytest
+          name: myartifact   
+  
+      
+      - name: Run main.py
+        run: python script/main.py
+      
+      - name: Pytest functional
         run: pytest
+  
+      - name: Display Directory Tree After Building
+        run: tree .
+     
+ 
+
+     
