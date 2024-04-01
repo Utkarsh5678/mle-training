@@ -8,26 +8,14 @@ from housingpriceprediction.ingest_data import (
     load_housing_data,
     prepare_data_for_training,
 )
+from housingpriceprediction.logging import ingest_logging
 
 def save_csv(data, filename):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
     data.to_csv(filename, index=False)
 
 def main(output_folder):
-    # Create log file path in the root directory
-    log_file = os.path.join(os.getcwd(), "log", "housing_prediction.log")
-    
-    # Create log directory if it doesn't exist
-    os.makedirs(os.path.dirname(log_file), exist_ok=True)
-    
-    # Configure logging to both file and console
-    logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(module)s - %(levelname)s - %(message)s')
-    console_handler = logging.StreamHandler(sys.stdout)
-    console_handler.setLevel(logging.INFO)
-    formatter = logging.Formatter('%(asctime)s - %(module)s - %(levelname)s - %(message)s')
-    console_handler.setFormatter(formatter)
-    logging.getLogger().addHandler(console_handler)
-    
+    ingest_logging()
     try:
         fetch_housing_data()
         housing = load_housing_data()
