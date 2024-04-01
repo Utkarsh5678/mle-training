@@ -42,6 +42,7 @@ jobs:
           pip install --upgrade setuptools
           pip install --upgrade build
           pip install -e .
+          pip install logging tree
           python -m build
 
       - name: Upload Package Artifact
