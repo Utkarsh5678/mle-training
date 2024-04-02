@@ -70,7 +70,9 @@ jobs:
         run: pytest
       
       - name: Making html
-        run: make html
+        run: |
+         cd docs 
+         make html
       - name: Display Directory Tree After Building
         run: tree .
      
