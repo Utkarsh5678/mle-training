@@ -74,3 +74,7 @@ python script/script_train.py data/raw artifacts/model --log_file training.log
 ```bash
 python script/script_score.py data/raw artifacts/model file --output_file="scoring.log"  -h
 python script/script_score.py data/raw artifacts/model file --output_file="scoring.log"
+
+```bash
+cd docs
+make html
