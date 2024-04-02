@@ -1,4 +1,4 @@
-name: Logging
+name: Html
 
 on:
   pull_request:
@@ -69,7 +69,10 @@ jobs:
       - name: Pytest functional
         run: pytest
       
-  
+      - name: Making html
+        run: |
+         cd docs 
+         make html
       - name: Display Directory Tree After Building
         run: tree .
      

@@ -12,6 +12,14 @@ HOUSING_PATH = os.path.join("data", "housing")
 HOUSING_URL = DOWNLOAD_ROOT + "datasets/housing/housing.tgz"
 
 def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
+    """
+    Fetches housing data from a given URL and saves it to a specified path.
+    Args:
+        housing_url (str): The URL from which to fetch the housing data. Defaults to HOUSING_URL.
+        housing_path (str): The path to which the housing data should be saved. Defaults to HOUSING_PATH.
+    Returns:
+        None
+    """
     os.makedirs(housing_path, exist_ok=True)  
     tgz_path = os.path.join(housing_path, "housing.tgz")
     urllib.request.urlretrieve(housing_url, tgz_path)
@@ -24,11 +32,33 @@ def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
 
 
 def load_housing_data(housing_path=HOUSING_PATH):
+    """
+    Load housing data from a specified path.
+    Parameters:
+    housing_path (str): The path to the directory containing the housing data.
+    Returns:
+    pandas.DataFrame: A DataFrame containing the loaded housing data.
+    """
     csv_path = os.path.join(housing_path, "housing.csv")
     return pd.read_csv(csv_path)
 
 
 def prepare_data_for_training(housing):
+    """
+    Prepare the housing data for training by performing the following steps:
+    
+    1. Create a new column 'income_cat' in the housing dataframe, which categorizes the 'median_income' column into 5 categories.
+    2. Split the housing dataframe into a stratified train and test set using the 'income_cat' column.
+    3. Drop the 'income_cat' column from both the train and test sets.
+    4. Separate the numerical and categorical features from the train and test sets.
+    5. Impute missing values in the numerical features using the 'median' strategy.
+    6. Calculate additional features based on the numerical features: 'rooms_per_household', 'bedrooms_per_room', and 'population_per_household'.
+    7. One-hot encode the categorical features in the train set.
+    8. Impute missing values in the numerical features of the test set using the same imputer fitted on the train set.
+    9. Calculate additional features based on the numerical features of the test set.
+    10. One-hot encode the categorical features in the test set.
+    11. Return the prepared train and test sets, as well as the target variables for training.
+    """
     housing["income_cat"] = pd.cut(
         housing["median_income"],
         bins=[0.0, 1.5, 3.0, 4.5, 6.0, np.inf],

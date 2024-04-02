@@ -5,6 +5,9 @@ import pandas as pd
 import logging
 import sys
 def ingest_logging():
+    """
+    Function to configure logging for the application, creating a log file and setting up logging to both file and console.
+    """
     log_file = os.path.join(os.getcwd(), "log", "housing_prediction.log")
     
     # Create log directory if it doesn't exist
@@ -18,6 +21,16 @@ def ingest_logging():
     console_handler.setFormatter(formatter)
     logging.getLogger().addHandler(console_handler)
 def setup_logging(output_mode, log_file=None, log_folder="logs"):
+    """
+    Set up logging configurations based on the specified output mode and log file settings.
+    
+    Parameters:
+        output_mode (str): The mode of output, either 'file' or 'console'.
+        log_file (str, optional): The name of the log file. If not provided, a default name will be used.
+        log_folder (str): The path to the folder where log files will be stored.
+    Returns:
+        None
+    """
     os.makedirs(log_folder, exist_ok=True)  # Create the log folder if it doesn't exist
     
     # Print the log folder path for diagnostic purposes
@@ -44,6 +57,14 @@ def setup_logging(output_mode, log_file=None, log_folder="logs"):
     print("Logging setup completed.")
 
 def train_logging(log_file=None, log_folder="log"):
+    """
+    Function to set up logging for model training.
+    Args:
+        log_file (str, optional): The name of the log file. Defaults to None.
+        log_folder (str): The folder where the log file will be stored.
+    Returns:
+        None
+    """
     os.makedirs(log_folder, exist_ok=True)
     log_file = os.path.join(log_folder, log_file) if log_file else None
     
