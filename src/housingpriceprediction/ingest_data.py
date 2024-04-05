@@ -6,6 +6,29 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+
+# column index
+rooms_ix, bedrooms_ix, population_ix, households_ix = 3, 4, 5, 6
+
+class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
+    def __init__(self, add_bedrooms_per_room=True): # no *args or **kargs
+        self.add_bedrooms_per_room = add_bedrooms_per_room
+    def fit(self, X, y=None):
+        return self  # nothing else to do
+    def transform(self, X):
+        rooms_per_household = X[:, rooms_ix] / X[:, households_ix]
+        population_per_household = X[:, population_ix] / X[:, households_ix]
+        if self.add_bedrooms_per_room:
+            bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
+            return np.c_[X, rooms_per_household, population_per_household,
+                         bedrooms_per_room]
+        else:
+            return np.c_[X, rooms_per_household, population_per_household]
 
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_PATH = os.path.join("data", "housing")
@@ -76,47 +99,31 @@ def prepare_data_for_training(housing):
     X_train = strat_train_set.drop("median_house_value", axis=1)
     y_train = strat_train_set["median_house_value"].copy()
 
-    imputer = SimpleImputer(strategy="median")
 
-    housing_num = X_train.drop("ocean_proximity", axis=1)
+    num_attribs = list(X_train.drop(["ocean_proximity"],axis=1))
+    cat_attribs = ["ocean_proximity"]
+    
+    num_pipeline = Pipeline([
+        ('imputer', SimpleImputer(strategy="median")),
+        ('attribs_adder', CombinedAttributesAdder()),
+        ('std_scaler', StandardScaler()),
+        ])
+    from sklearn.compose import ColumnTransformer
 
-    imputer.fit(housing_num)
-    X = imputer.transform(housing_num)
 
-    housing_tr = pd.DataFrame(X, columns=housing_num.columns, index=X_train.index)
+    full_pipeline = ColumnTransformer([
+        ("num", num_pipeline, num_attribs),
+        ("cat", OneHotEncoder(), cat_attribs),
+        ])
 
-    housing_tr["rooms_per_household"] = (
-        housing_tr["total_rooms"] / housing_tr["households"]
-    )
-    housing_tr["bedrooms_per_room"] = (
-        housing_tr["total_bedrooms"] / housing_tr["total_rooms"]
-    )
-    housing_tr["population_per_household"] = (
-        housing_tr["population"] / housing_tr["households"]
-    )
-
-    housing_cat = X_train[["ocean_proximity"]]
-    X_train_prepared = housing_tr.join(pd.get_dummies(housing_cat, drop_first=True))
-
+    X_train_prepared = pd.DataFrame(full_pipeline.fit_transform(X_train))
+    
     X_test = strat_test_set.drop("median_house_value", axis=1)
     y_test = strat_test_set["median_house_value"].copy()
+    X_test_prepared = pd.DataFrame(full_pipeline.fit_transform(X_test))
 
-    X_test_num = X_test.drop("ocean_proximity", axis=1)
-    X_test_prepared = imputer.transform(X_test_num)
-    X_test_prepared = pd.DataFrame(
-        X_test_prepared, columns=X_test_num.columns, index=X_test.index
-    )
-    X_test_prepared["rooms_per_household"] = (
-        X_test_prepared["total_rooms"] / X_test_prepared["households"]
-    )
-    X_test_prepared["bedrooms_per_room"] = (
-        X_test_prepared["total_bedrooms"] / X_test_prepared["total_rooms"]
-    )
-    X_test_prepared["population_per_household"] = (
-        X_test_prepared["population"] / X_test_prepared["households"]
-    )
 
-    X_test_cat = X_test[["ocean_proximity"]]
-    X_test_prepared = X_test_prepared.join(pd.get_dummies(X_test_cat, drop_first=True))
+
+
 
     return X_train_prepared, X_test_prepared, y_train, y_test
