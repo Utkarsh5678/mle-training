@@ -1,69 +1,77 @@
 import argparse
 import os
+
 import joblib
+import numpy as np
 import pandas as pd
-import logging  # Add logging module
+from housingpriceprediction.score import score_model_mae, score_model_rmse
 
-from housingpriceprediction import ingest_data
-from housingpriceprediction import score as scoring
-from housingpriceprediction.logging import setup_logging
 
-def main(args):
-    log_folder = "log"  # Assuming "log" is the existing log folder in the directory
-    setup_logging(args.output_mode, args.output_file, log_folder)
-
-    # Load models
-    model_files = os.listdir(args.model_)
-    models = {}
-    for file in model_files:
-        if file.endswith(".pkl"):
-            model_name = os.path.splitext(file)[0]
-            model = joblib.load(os.path.join(args.model_, file))
-            models[model_name] = model
-
-    # Load dataset
-    df = {}
-    files = os.listdir(args.input_dr)
-    for f in files:
-        file_path = os.path.join(args.input_dr, f)
-        if not file_path.endswith(".csv"):
-            continue  
-        try:
-            df[f] = pd.read_csv(file_path)
-        except pd.errors.EmptyDataError:
-            continue  
-    ingest_data.fetch_housing_data()
-    housing = df["housing.csv"]
-    X_train, X_test, y_train, y_test = ingest_data.prepare_data_for_training(housing)
-
-    # Score models
-    for model_name, model in models.items():
-        mae = scoring.score_model_mae(model, X_train, y_train)
-        rmse = scoring.score_model_rmse(model, X_train, y_train)
-        if args.output_mode == "file":
-            logging.info(f"Model: {model_name}, MAE: {mae}, RMSE: {rmse}")
-        elif args.output_mode == "print":
-            print(f"Model: {model_name}, MAE: {mae}, RMSE: {rmse}")
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Score models using the specified dataset"
-    )
+def main():
+    parser = argparse.ArgumentParser(description="Score models.")
     parser.add_argument(
-        "input_dr", type=str, help="Path to the dataset directory"
-    )  
-    parser.add_argument("model_", type=str, help="Path to the model directory")  
+        "--artifacts_path", type=str, default="artifacts",
+        help="Path to load model artifacts.")
     parser.add_argument(
-        "output_mode",
-        choices=["file", "print"],
-        default="print",
-        help="Output mode: 'file' to save to a file, 'print' to print to console (default: 'print')",  
-    )
-    parser.add_argument(
-        "--output_file",
-        type=str,
-        help="Path to the output file. Required only when output_mode is 'file'.",
-    )
+        "--processed_path", type=str, default="data/processed",
+        help="Path to load processed data.")
     args = parser.parse_args()
 
-    main(args)
+    # Load preprocessed data
+    X_test = pd.read_csv(f"{args.processed_path}/X_test.csv")
+    y_test = pd.read_csv(
+        f"{args.processed_path}/y_test.csv"
+    ).values.ravel()  # Convert to 1D array
+
+    # Load models
+    LR_model = joblib.load(
+        f"{args.artifacts_path}/Linear_Regression_Model.pkl"
+    )
+    DT_model = joblib.load(
+        f"{args.artifacts_path}/Decision_Tree_Model.pkl"
+    )
+    rand_tune_RF_model = joblib.load(
+        f"{args.artifacts_path}/Randomized_Search_Model.pkl"
+    )
+    grid_tune_RF_model = joblib.load(
+        f"{args.artifacts_path}/Grid_Search_Model.pkl"
+    )
+
+    # Calculate scores
+    lr_mae_score = score_model_mae(LR_model, X_test, y_test)
+    lr_rmse_score = score_model_rmse(LR_model, X_test, y_test)
+    dt_mae_score = score_model_mae(DT_model, X_test, y_test)
+    dt_rmse_score = score_model_rmse(DT_model, X_test, y_test)
+    final_score = score_model_rmse(grid_tune_RF_model, X_test, y_test)
+    rand_cvres = rand_tune_RF_model.cv_results_
+    grid_cvres = grid_tune_RF_model.cv_results_
+
+
+    # Save scores to files
+    metrics_path = os.path.join("artifacts", "scores")
+    os.makedirs(metrics_path, exist_ok=True)
+    with open(os.path.join(metrics_path, "Linear Regression Model Score.txt"), "w") as f:
+        f.write("Linear Regression MAE score: " + str(lr_mae_score) + "\n")
+        f.write("Linear Regression RMSE score: " + str(lr_rmse_score) + "\n")
+    with open(os.path.join(metrics_path, "Decision Tree Model Score.txt"), "w") as f:
+        f.write("Decision Tree MAE score: " + str(dt_mae_score) + "\n")
+        f.write("Decision Tree RMSE score: " + str(dt_rmse_score) + "\n")
+    with open(os.path.join(metrics_path, "rand_rf_score.txt"), "w") as f:
+        f.write("Random Forest using RandomizedSearchCV model score:\n")
+        for mean_score, params in zip(
+                rand_cvres["mean_test_score"], rand_cvres["params"]
+            ):
+            f.write("{} {}\n".format(np.sqrt(-mean_score), params))
+    with open(os.path.join(metrics_path, "grid_rf_score.txt"), "w") as f:
+        f.write("Random Forest using GridSearchCV model score: \n")
+        for mean_score, params in zip(
+                grid_cvres["mean_test_score"], grid_cvres["params"]
+            ):
+            f.write("{} {}\n".format(np.sqrt(-mean_score), params))
+    with open(os.path.join(metrics_path, "final_score.txt"), "w") as f:
+        f.write("Final Model Score: " + str(final_score) + "\n")
+
+    print("Scores saved to:", metrics_path)
+
+if __name__ == "__main__":
+    main()
