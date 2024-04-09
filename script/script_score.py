@@ -1,10 +1,11 @@
 import argparse
 import os
-
+import logging
 import joblib
 import numpy as np
 import pandas as pd
 from housingpriceprediction.score import score_model_mae, score_model_rmse
+from housingpriceprediction.logging import setup_logging
 
 
 def main():
@@ -48,7 +49,7 @@ def main():
 
 
     # Save scores to files
-    metrics_path = os.path.join("artifacts", "scores")
+    metrics_path = os.path.join("log")
     os.makedirs(metrics_path, exist_ok=True)
     with open(os.path.join(metrics_path, "Linear Regression Model Score.txt"), "w") as f:
         f.write("Linear Regression MAE score: " + str(lr_mae_score) + "\n")

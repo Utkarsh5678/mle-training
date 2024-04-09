@@ -1,4 +1,5 @@
 import argparse
+import logging
 
 from housingpriceprediction.ingest_data import (
     fetch_housing_data,
@@ -6,8 +7,9 @@ from housingpriceprediction.ingest_data import (
     prepare_data_for_training,
 )
 
-
+from housingpriceprediction.logging import ingest_logging
 def main():
+    ingest_logging()
     parser = argparse.ArgumentParser(
         description="Fetch and prepare data for training."
     )
@@ -31,6 +33,8 @@ def main():
     X_test.to_csv(f"{args.processed_path}/X_test.csv", index=False)
     y_train.to_csv(f"{args.processed_path}/y_train.csv", index=False)
     y_test.to_csv(f"{args.processed_path}/y_test.csv", index=False)
+    logging.info("Data processing and saving completed.")
+
 
 if __name__ == "__main__":
     main()
