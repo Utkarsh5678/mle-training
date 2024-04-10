@@ -26,7 +26,15 @@ DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
 HOUSING_URL = DOWNLOAD_ROOT + "datasets/housing/housing.tgz"
 
 
-def fetch_housing_data(housing_url=HOUSING_URL, raw_path=RAW_PATH):
+def fetch_housing_data(housing_url=HOUSING_URL, raw_path=RAW_PATH):   
+    """
+    A function to fetch housing data from a URL, save it locally, and extract the data.
+    
+    :param housing_url: str, the URL from which to fetch the housing data (default value is HOUSING_URL)
+    :param raw_path: str, the path to save the raw data (default value is RAW_PATH)
+    
+    :return: None
+ """
     os.makedirs(raw_path, exist_ok=True)
     tgz_path = os.path.join(raw_path, "housing.tgz")
     urllib.request.urlretrieve(housing_url, tgz_path)
@@ -36,18 +44,30 @@ def fetch_housing_data(housing_url=HOUSING_URL, raw_path=RAW_PATH):
 
 
 def load_housing_data(raw_path=RAW_PATH):
+    """
+    A function that loads housing data from a specified path.
+    :param raw_path: The path to the raw data directory. Default is RAW_PATH.
+    :return: A pandas DataFrame containing the loaded housing data.
+    """
     csv_path = os.path.join(raw_path, "housing.csv")
     return pd.read_csv(csv_path)
 
 
-class FeatureEngineeringTransformer(BaseEstimator, TransformerMixin):
+class FeatureEngineeringTransformer(BaseEstimator, TransformerMixin): 
+    """
+        Initializes the object with the given parameters.
+        """
+
     def __init__(self):
         pass
 
     def fit(self, X, y=None):
-        return self  # No fitting necessary
+        return self  
 
-    def transform(self, X):
+    def transform(self, X):   
+        """
+        Perform transformations on the input data X and add new features to it.
+        """
         rooms_ix, bedrooms_ix, population_ix, household_ix = 0, 1, 2, 3
         rooms_per_household = X[:, rooms_ix] / X[:, household_ix]
         bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
@@ -56,7 +76,10 @@ class FeatureEngineeringTransformer(BaseEstimator, TransformerMixin):
 
 
 
-def prepare_data_for_training(housing, processed_path=PROCESSED_PATH):
+def prepare_data_for_training(housing, processed_path=PROCESSED_PATH): 
+    """
+    Prepare the housing data for training by encoding income categories, splitting the data into training and testing sets, dropping unnecessary columns, creating pipelines for numerical and categorical features, and preparing the data for training and testing. Returns the prepared training and testing data along with the corresponding target variables.
+    """
     housing["income_cat"] = pd.cut(
         housing["median_income"],
         bins=[0.0, 1.5, 3.0, 4.5, 6.0, np.inf],
@@ -72,10 +95,8 @@ def prepare_data_for_training(housing, processed_path=PROCESSED_PATH):
         set_.drop("income_cat", axis=1, inplace=True)
 
     os.makedirs(processed_path, exist_ok=True)
-    # Define numerical features
     num_features = ['longitude','latitude','housing_median_age','total_rooms', 'total_bedrooms', 'population', 'households','median_income']
 
-    # Define categorical features
     cat_features = ['ocean_proximity']
 
     # Pipeline for numerical features
@@ -85,12 +106,10 @@ def prepare_data_for_training(housing, processed_path=PROCESSED_PATH):
         ('std_scaler', StandardScaler())
     ])
 
-    # Pipeline for categorical features
     cat_pipeline = Pipeline([
         ('onehot', OneHotEncoder())
     ])
 
-    # Full pipeline
     full_pipeline = ColumnTransformer([
         ('num', num_pipeline, num_features),
         ('cat', cat_pipeline, cat_features)
