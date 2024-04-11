@@ -1,63 +1,84 @@
+# import os
+# import tarfile
+# import urllib.request
+
+# import numpy as np
+# import pandas as pd
+# from sklearn.impute import SimpleImputer
+# from sklearn.model_selection import StratifiedShuffleSplit
 import os
 import tarfile
 import urllib.request
 
 import numpy as np
 import pandas as pd
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
+DATA_PATH = "data"
+RAW_PATH = os.path.join(DATA_PATH, "raw")
+PROCESSED_PATH = os.path.join(DATA_PATH, "processed")
 DOWNLOAD_ROOT = "https://raw.githubusercontent.com/ageron/handson-ml/master/"
-HOUSING_PATH = os.path.join("data", "housing")
 HOUSING_URL = DOWNLOAD_ROOT + "datasets/housing/housing.tgz"
 
-def fetch_housing_data(housing_url=HOUSING_URL, housing_path=HOUSING_PATH):
+
+def fetch_housing_data(housing_url=HOUSING_URL, raw_path=RAW_PATH):   
     """
-    Fetches housing data from a given URL and saves it to a specified path.
-    Args:
-        housing_url (str): The URL from which to fetch the housing data. Defaults to HOUSING_URL.
-        housing_path (str): The path to which the housing data should be saved. Defaults to HOUSING_PATH.
-    Returns:
-        None
-    """
-    os.makedirs(housing_path, exist_ok=True)  
-    tgz_path = os.path.join(housing_path, "housing.tgz")
+    A function to fetch housing data from a URL, save it locally, and extract the data.
+    
+    :param housing_url: str, the URL from which to fetch the housing data (default value is HOUSING_URL)
+    :param raw_path: str, the path to save the raw data (default value is RAW_PATH)
+    
+    :return: None
+ """
+    os.makedirs(raw_path, exist_ok=True)
+    tgz_path = os.path.join(raw_path, "housing.tgz")
     urllib.request.urlretrieve(housing_url, tgz_path)
     housing_tgz = tarfile.open(tgz_path)
-    housing_tgz.extractall(path=housing_path)
+    housing_tgz.extractall(path=raw_path)
     housing_tgz.close()
 
-# Rest of the code remains the same
 
-
-
-def load_housing_data(housing_path=HOUSING_PATH):
+def load_housing_data(raw_path=RAW_PATH):
     """
-    Load housing data from a specified path.
-    Parameters:
-    housing_path (str): The path to the directory containing the housing data.
-    Returns:
-    pandas.DataFrame: A DataFrame containing the loaded housing data.
+    A function that loads housing data from a specified path.
+    :param raw_path: The path to the raw data directory. Default is RAW_PATH.
+    :return: A pandas DataFrame containing the loaded housing data.
     """
-    csv_path = os.path.join(housing_path, "housing.csv")
+    csv_path = os.path.join(raw_path, "housing.csv")
     return pd.read_csv(csv_path)
 
 
-def prepare_data_for_training(housing):
+class FeatureEngineeringTransformer(BaseEstimator, TransformerMixin): 
     """
-    Prepare the housing data for training by performing the following steps:
-    
-    1. Create a new column 'income_cat' in the housing dataframe, which categorizes the 'median_income' column into 5 categories.
-    2. Split the housing dataframe into a stratified train and test set using the 'income_cat' column.
-    3. Drop the 'income_cat' column from both the train and test sets.
-    4. Separate the numerical and categorical features from the train and test sets.
-    5. Impute missing values in the numerical features using the 'median' strategy.
-    6. Calculate additional features based on the numerical features: 'rooms_per_household', 'bedrooms_per_room', and 'population_per_household'.
-    7. One-hot encode the categorical features in the train set.
-    8. Impute missing values in the numerical features of the test set using the same imputer fitted on the train set.
-    9. Calculate additional features based on the numerical features of the test set.
-    10. One-hot encode the categorical features in the test set.
-    11. Return the prepared train and test sets, as well as the target variables for training.
+        Initializes the object with the given parameters.
+        """
+
+    def __init__(self):
+        pass
+
+    def fit(self, X, y=None):
+        return self  
+
+    def transform(self, X):   
+        """
+        Perform transformations on the input data X and add new features to it.
+        """
+        rooms_ix, bedrooms_ix, population_ix, household_ix = 0, 1, 2, 3
+        rooms_per_household = X[:, rooms_ix] / X[:, household_ix]
+        bedrooms_per_room = X[:, bedrooms_ix] / X[:, rooms_ix]
+        population_per_household = X[:, population_ix] / X[:, household_ix]
+        return np.c_[X, rooms_per_household, bedrooms_per_room, population_per_household]
+
+
+
+def prepare_data_for_training(housing, processed_path=PROCESSED_PATH): 
+    """
+    Prepare the housing data for training by encoding income categories, splitting the data into training and testing sets, dropping unnecessary columns, creating pipelines for numerical and categorical features, and preparing the data for training and testing. Returns the prepared training and testing data along with the corresponding target variables.
     """
     housing["income_cat"] = pd.cut(
         housing["median_income"],
@@ -73,50 +94,35 @@ def prepare_data_for_training(housing):
     for set_ in (strat_train_set, strat_test_set):
         set_.drop("income_cat", axis=1, inplace=True)
 
+    os.makedirs(processed_path, exist_ok=True)
+    num_features = ['longitude','latitude','housing_median_age','total_rooms', 'total_bedrooms', 'population', 'households','median_income']
+
+    cat_features = ['ocean_proximity']
+
+    # Pipeline for numerical features
+    num_pipeline = Pipeline([
+        ('imputer', SimpleImputer(strategy='median')),
+        ('feature_engineering', FeatureEngineeringTransformer()),
+        ('std_scaler', StandardScaler())
+    ])
+
+    cat_pipeline = Pipeline([
+        ('onehot', OneHotEncoder())
+    ])
+
+    full_pipeline = ColumnTransformer([
+        ('num', num_pipeline, num_features),
+        ('cat', cat_pipeline, cat_features)
+    ])
+
     X_train = strat_train_set.drop("median_house_value", axis=1)
     y_train = strat_train_set["median_house_value"].copy()
 
-    imputer = SimpleImputer(strategy="median")
-
-    housing_num = X_train.drop("ocean_proximity", axis=1)
-
-    imputer.fit(housing_num)
-    X = imputer.transform(housing_num)
-
-    housing_tr = pd.DataFrame(X, columns=housing_num.columns, index=X_train.index)
-
-    housing_tr["rooms_per_household"] = (
-        housing_tr["total_rooms"] / housing_tr["households"]
-    )
-    housing_tr["bedrooms_per_room"] = (
-        housing_tr["total_bedrooms"] / housing_tr["total_rooms"]
-    )
-    housing_tr["population_per_household"] = (
-        housing_tr["population"] / housing_tr["households"]
-    )
-
-    housing_cat = X_train[["ocean_proximity"]]
-    X_train_prepared = housing_tr.join(pd.get_dummies(housing_cat, drop_first=True))
+    X_train_prepared = pd.DataFrame(full_pipeline.fit_transform(X_train))
 
     X_test = strat_test_set.drop("median_house_value", axis=1)
     y_test = strat_test_set["median_house_value"].copy()
 
-    X_test_num = X_test.drop("ocean_proximity", axis=1)
-    X_test_prepared = imputer.transform(X_test_num)
-    X_test_prepared = pd.DataFrame(
-        X_test_prepared, columns=X_test_num.columns, index=X_test.index
-    )
-    X_test_prepared["rooms_per_household"] = (
-        X_test_prepared["total_rooms"] / X_test_prepared["households"]
-    )
-    X_test_prepared["bedrooms_per_room"] = (
-        X_test_prepared["total_bedrooms"] / X_test_prepared["total_rooms"]
-    )
-    X_test_prepared["population_per_household"] = (
-        X_test_prepared["population"] / X_test_prepared["households"]
-    )
-
-    X_test_cat = X_test[["ocean_proximity"]]
-    X_test_prepared = X_test_prepared.join(pd.get_dummies(X_test_cat, drop_first=True))
+    X_test_prepared = pd.DataFrame(full_pipeline.transform(X_test))
 
     return X_train_prepared, X_test_prepared, y_train, y_test
