@@ -1,7 +1,7 @@
 import argparse
-
 import joblib
 import pandas as pd
+import mlflow
 
 from housingpriceprediction.train import (
     grid_tune_random_forest,
@@ -32,6 +32,9 @@ def main():
     joblib.dump(DT_model, f"{args.output_path}/Decision_Tree_Model.pkl")
     joblib.dump(rand_tune_RF_model, f"{args.output_path}/Randomized_Search_Model.pkl")
     joblib.dump(grid_tune_RF_model, f"{args.output_path}/Grid_Search_Model.pkl")
+    
+    # Log artifacts
+    mlflow.log_artifact(args.output_path)
 
 if __name__ == "__main__":
     main()

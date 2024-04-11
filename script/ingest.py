@@ -1,5 +1,6 @@
 import argparse
 import logging
+import mlflow
 
 from housingpriceprediction.ingest_data import (
     fetch_housing_data,
@@ -34,6 +35,10 @@ def main():
     y_train.to_csv(f"{args.processed_path}/y_train.csv", index=False)
     y_test.to_csv(f"{args.processed_path}/y_test.csv", index=False)
     logging.info("Data processing and saving completed.")
+    mlflow.log_param("test_size", 0.2)
+    mlflow.log_param("random_state", 42)
+    mlflow.log_artifact(args.raw_path)
+    mlflow.log_artifact(args.processed_path)
 
 
 if __name__ == "__main__":
