@@ -1,7 +1,7 @@
 name: Html
 
 on:
-  pull_request:
+  push: # Only trigger on push events
     branches:
       - main
 
