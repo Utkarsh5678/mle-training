@@ -4,6 +4,7 @@ import logging
 import joblib
 import numpy as np
 import pandas as pd
+import mlflow
 from housingpriceprediction.score import score_model_mae, score_model_rmse
 from housingpriceprediction.logging import setup_logging
 
@@ -46,7 +47,11 @@ def main():
     final_score = score_model_rmse(grid_tune_RF_model, X_test, y_test)
     rand_cvres = rand_tune_RF_model.cv_results_
     grid_cvres = grid_tune_RF_model.cv_results_
-
+    mlflow.log_metric("lr_mae",lr_mae_score)
+    mlflow.log_metric("lr_rmse",lr_rmse_score)
+    mlflow.log_metric("dt_mae",dt_mae_score)
+    mlflow.log_metric("dt_rmse",dt_mae_score)
+    mlflow.log_metric("final score",final_score)
 
     # Save scores to files
     metrics_path = os.path.join("log")
