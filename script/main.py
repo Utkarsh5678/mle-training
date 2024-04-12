@@ -3,10 +3,12 @@ import subprocess
 import mlflow
 
 
-def run_script(script_path, parent_run_id):
+def run_script(script_path, parent_run_id, run_name):
     env = os.environ.copy()
     env["MLFLOW_RUN_ID"] = parent_run_id
+    mlflow.start_run(run_name=run_name)
     subprocess.run(["python", script_path], env=env)
+    mlflow.end_run()
 
 
 def main():
@@ -15,7 +17,7 @@ def main():
     exp_name = "HousePricePrediction1"
     mlflow.set_experiment(exp_name)
 
-    with mlflow.start_run() as parent_run:
+    with mlflow.start_run(run_name="Parent Run") as parent_run:
         ingest_data_run = os.path.join(
             os.getcwd(),
             "script",
@@ -32,17 +34,17 @@ def main():
             "script_score.py",
         )
 
-        with mlflow.start_run(nested=True) as ingest_data_child_run:
+        with mlflow.start_run(run_name="Ingest Data", nested=True) as ingest_data_child_run:
             print("Running ingest.py")
-            run_script(ingest_data_run, ingest_data_child_run.info.run_id)
+            run_script(ingest_data_run, ingest_data_child_run.info.run_id, "Ingest Script Run")
 
-        with mlflow.start_run(nested=True) as train_child_run:
+        with mlflow.start_run(run_name="Train Model", nested=True) as train_child_run:
             print("Running script_train.py")
-            run_script(train_run, train_child_run.info.run_id)
+            run_script(train_run, train_child_run.info.run_id, "Training Script Run")
 
-        with mlflow.start_run(nested=True) as score_child_run:
+        with mlflow.start_run(run_name="Score Model", nested=True) as score_child_run:
             print("Running script_score.py")
-            run_script(score_run, score_child_run.info.run_id)
+            run_script(score_run, score_child_run.info.run_id, "Scoring Script Run")
 
         print("\nParent Run ID:", parent_run.info.run_id)
         print("Ingest Child Run ID:", ingest_data_child_run.info.run_id)
