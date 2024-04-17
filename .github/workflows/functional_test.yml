@@ -3,7 +3,7 @@ name: Html
 on:
   push: # Only trigger on push events
     branches:
-      - main
+      - main-dummy 
 
 jobs:
   build-package:

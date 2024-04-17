@@ -1,0 +1,6 @@
+pandas
+-e .
+scikit-learn
+argparse
+joblib
+mlflow
