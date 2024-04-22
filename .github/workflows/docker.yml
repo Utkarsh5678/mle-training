@@ -33,5 +33,5 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: utkarsh55/demo4:v3 .
+        tags: utkarsh55/demo4:v3
         file: ./dockerfile
