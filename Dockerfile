@@ -13,8 +13,9 @@ EXPOSE 5000
 # Install Python dependencies
 RUN pip install -r requirements.txt
 
-# Run the scripts
-CMD python script/ingest.py && \
-    python script/script_train.py && \
-    python script/script_score.py && \
-    python -m http.server 5000
+# Run MLflow server in the background
+CMD mlflow server --host 0.0.0.0 & \
+    sleep 5 && \
+    mlflow ui --port 5000 & \
+    python script/main.py && \
+    tail -f /dev/null
