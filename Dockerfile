@@ -14,7 +14,7 @@ EXPOSE 5000
 RUN pip install -r requirements.txt
 
 # Run MLflow server in the background
-CMD mlflow server --host 0.0.0.0 & \
+CMD mlflow server --h 0.0.0.0 & \
     sleep 5 && \
     mlflow ui --port 5000 & \
     python script/main.py && \
