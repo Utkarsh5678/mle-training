@@ -17,5 +17,4 @@ RUN pip install -r requirements.txt
 CMD mlflow server --host 0.0.0.0 & \
     sleep 5 && \
     mlflow ui --port 5000 & \
-    python script/main.py && \
-    tail -f /dev/null
+    python script/main.py 
