@@ -3,7 +3,7 @@ name: docker
 on:
   push:
     branches:
-      - enh/39/docker
+      - enh/40/dockerpull
   workflow_dispatch:
 
 jobs:
@@ -35,3 +35,9 @@ jobs:
         push: true
         tags: utkarsh55/demo4:v4
         file: ./Dockerfile
+
+    - name: Pull Docker Image
+      run: docker pull utkarsh55/demo4:v4
+
+    - name: Run Docker Container
+      run: docker run -p 5000:5000 utkarsh55/demo4:v4
