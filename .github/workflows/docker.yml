@@ -39,4 +39,4 @@ jobs:
       run: docker pull utkarsh55/demo4:v5
 
     - name: Run Docker Container
-      run: docker run -p 5000:5000 utkarsh55/demo4:v5
+      run: docker run -t -i -p 5000:5000 -e GUNICORN_CMD_ARGS="--bind=0.0.0.0" utkarsh55/demo4:v5
