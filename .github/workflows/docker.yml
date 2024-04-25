@@ -33,4 +33,5 @@ jobs:
       run: docker pull utkarsh55/demo4:v4
 
     - name: Run Docker Container
-      run: docker run -p 5000:5000 utkarsh55/demo4:v4 
+      run: |
+        docker run -p 5000:5000 utkarsh55/demo4:v4
